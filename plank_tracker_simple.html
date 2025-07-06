@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plank Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f9fafb;
+            color: #1f2937;
+        }
+        
+        .container {
+            max-width: 28rem;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: #f9fafb;
+        }
+        
+        .header {
+            background-color: #2563eb;
+            color: white;
+            padding: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .header p {
+            font-size: 0.875rem;
+            color: #dbeafe;
+        }
+        
+        .nav {
+            background-color: white;
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .nav-btn {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+            transition: all 0.2s;
+        }
+        
+        .nav-btn.active {
+            color: #2563eb;
+            border-bottom-color: #3b82f6;
+        }
+        
+        .nav-btn:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .content {
+            padding: 1rem;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        
+        .card h2, .card h3 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .today-time {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2563eb;
+            margin-bottom: 0.25rem;
+        }
+        
+        .add-btn {
+            width: 100%;
+            background-color: #2563eb;
+            color: white;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+        
+        .add-btn:hover {
+            background-color: #1d4ed8;
+        }
+        
+        .form-group {
+            margin-bottom: 0.75rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+        
+        .btn-row {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+        }
+        
+        .btn-secondary {
+            background-color: #d1d5db;
+            color: #374151;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #9ca3af;
+        }
+        
+        .plank-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .plank-item:last-child {
+            border-bottom: none;
+        }
+        
+        .plank-type {
+            font-weight: 500;
+        }
+        
+        .plank-date {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .plank-duration {
+            font-weight: 600;
+            color: #2563eb;
+        }
+        
+        .team-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .team-item:last-child {
+            border-bottom: none;
+        }
+        
+        .team-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .rank-badge {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .rank-1 { background-color: #eab308; }
+        .rank-2 { background-color: #9ca3af; }
+        .rank-3 { background-color: #d97706; }
+        .rank-other { background-color: #3b82f6; }
+        
+        .member-name {
+            font-weight: 500;
+        }
+        
+        .member-streak {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .stat-blue { color: #2563eb; }
+        .stat-green { color: #16a34a; }
+        .stat-purple { color: #9333ea; }
+        .stat-orange { color: #ea580c; }
+        
+        .type-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+        }
+        
+        .type-stats {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Plank Tracker</h1>
+            <p>Stay strong together!</p>
+        </div>
+        
+        <div class="nav">
+            <button class="nav-btn active" onclick="showView('my-planks')">⏰ My Planks</button>
+            <button class="nav-btn" onclick="showView('team')">👥 Team</button>
+            <button class="nav-btn" onclick="showView('stats')">📊 Stats</button>
+        </div>
+        
+        <div class="content">
+            <!-- My Planks View -->
+            <div id="my-planks-view">
+                <div class="card">
+                    <h2>Today's Progress</h2>
+                    <div class="today-time" id="today-total">0s</div>
+                    <p style="font-size: 0.875rem; color: #6b7280;">Total plank time today</p>
+                </div>
+                
+                <button class="add-btn" onclick="showAddForm()">➕ Add Plank</button>
+                
+                <div class="card hidden" id="add-form">
+                    <h3>Log New Plank</h3>
+                    <div class="form-group">
+                        <label>Duration (seconds)</label>
+                        <input type="number" id="duration-input" placeholder="60">
+                    </div>
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select id="type-select">
+                            <option value="Standard">Standard</option>
+                            <option value="Side">Side</option>
+                            <option value="Reverse">Reverse</option>
+                            <option value="One-Arm">One-Arm</option>
+                        </select>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn btn-primary" onclick="addPlank()">Save</button>
+                        <button class="btn btn-secondary" onclick="hideAddForm()">Cancel</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Recent Planks</h3>
+                    <div id="planks-list"></div>
+                </div>
+            </div>
+            
+            <!-- Team View -->
+            <div id="team-view" class="hidden">
+                <div class="card">
+                    <h3>🏆 Team Leaderboard</h3>
+                    <div id="team-list"></div>
+                </div>
+            </div>
+            
+            <!-- Stats View -->
+            <div id="stats-view" class="hidden">
+                <div class="card">
+                    <h3>Your Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value stat-blue" id="total-time">0s</div>
+                            <div class="stat-label">Total Time</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value stat-green" id="total-planks">0</div>
+                            <div class="stat-label">Total Planks</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value stat-purple" id="daily-avg">0s</div>
+                            <div class="stat-label">Daily Average</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value stat-orange" id="personal-best">0s</div>
+                            <div class="stat-label">Personal Best</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Plank Types</h3>
+                    <div id="types-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let myPlanks = [];
+        let teamMembers = [
+            { id: 1, name: 'Alex', totalTime: 450, todayTime: 105, streak: 5 },
+            { id: 2, name: 'Sarah', totalTime: 520, todayTime: 90, streak: 7 },
+            { id: 3, name: 'Mike', totalTime: 380, todayTime: 0, streak: 3 },
+            { id: 4, name: 'Emma', totalTime: 610, todayTime: 120, streak: 8 },
+            { id: 5, name: 'You', totalTime: 195, todayTime: 105, streak: 4 }
+        ];
+        
+        // Load data from localStorage
+        function loadData() {
+            try {
+                const saved = localStorage.getItem('myPlanks');
+                if (saved) {
+                    myPlanks = JSON.parse(saved);
+                } else {
+                    // Sample data
+                    myPlanks = [
+                        { id: 1, duration: 60, type: 'Standard', date: '2025-07-06', time: '09:30' },
+                        { id: 2, duration: 45, type: 'Side', date: '2025-07-06', time: '09:35' },
+                        { id: 3, duration: 90, type: 'Standard', date: '2025-07-05', time: '18:20' }
+                    ];
+                }
+            } catch (e) {
+                console.log('Could not load data');
+                myPlanks = [];
+            }
+        }
+        
+        // Save data to localStorage
+        function saveData() {
+            try {
+                localStorage.setItem('myPlanks', JSON.stringify(myPlanks));
+            } catch (e) {
+                console.log('Could not save data');
+            }
+        }
+        
+        // Format time
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+        }
+        
+        // Get today's total
+        function getTodayTotal() {
+            const today = new Date().toISOString().split('T')[0];
+            return myPlanks
+                .filter(plank => plank.date === today)
+                .reduce((total, plank) => total + plank.duration, 0);
+        }
+        
+        // Get weekly average
+        function getWeeklyAverage() {
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            const weeklyPlanks = myPlanks.filter(plank => new Date(plank.date) >= weekAgo);
+            const totalTime = weeklyPlanks.reduce((sum, plank) => sum + plank.duration, 0);
+            return Math.round(totalTime / 7);
+        }
+        
+        // Show view
+        function showView(view) {
+            // Hide all views
+            document.getElementById('my-planks-view').classList.add('hidden');
+            document.getElementById('team-view').classList.add('hidden');
+            document.getElementById('stats-view').classList.add('hidden');
+            
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected view
+            document.getElementById(view + '-view').classList.remove('hidden');
+            
+            // Add active class to selected nav button
+            event.target.classList.add('active');
+            
+            // Update content
+            if (view === 'my-planks') {
+                updateMyPlanks();
+            } else if (view === 'team') {
+                updateTeam();
+            } else if (view === 'stats') {
+                updateStats();
+            }
+        }
+        
+        // Show add form
+        function showAddForm() {
+            document.getElementById('add-form').classList.remove('hidden');
+        }
+        
+        // Hide add form
+        function hideAddForm() {
+            document.getElementById('add-form').classList.add('hidden');
+            document.getElementById('duration-input').value = '';
+            document.getElementById('type-select').value = 'Standard';
+        }
+        
+        // Add plank
+        function addPlank() {
+            const duration = parseInt(document.getElementById('duration-input').value);
+            const type = document.getElementById('type-select').value;
+            
+            if (duration && duration > 0) {
+                const now = new Date();
+                const plank = {
+                    id: Date.now(),
+                    duration: duration,
+                    type: type,
+                    date: now.toISOString().split('T')[0],
+                    time: now.toTimeString().slice(0, 5)
+                };
+                
+                myPlanks.unshift(plank);
+                saveData();
+                updateMyPlanks();
+                hideAddForm();
+            }
+        }
+        
+        // Update my planks view
+        function updateMyPlanks() {
+            // Update today's total
+            document.getElementById('today-total').textContent = formatTime(getTodayTotal());
+            
+            // Update planks list
+            const planksHtml = myPlanks.map(plank => `
+                <div class="plank-item">
+                    <div>
+                        <div class="plank-type">${plank.type} Plank</div>
+                        <div class="plank-date">${plank.date} at ${plank.time}</div>
+                    </div>
+                    <div class="plank-duration">${formatTime(plank.duration)}</div>
+                </div>
+            `).join('');
+            
+            document.getElementById('planks-list').innerHTML = planksHtml;
+        }
+        
+        // Update team view
+        function updateTeam() {
+            // Update "You" member with current data
+            const youMember = teamMembers.find(m => m.name === 'You');
+            if (youMember) {
+                youMember.totalTime = myPlanks.reduce((sum, p) => sum + p.duration, 0);
+                youMember.todayTime = getTodayTotal();
+            }
+            
+            const sortedMembers = [...teamMembers].sort((a, b) => b.totalTime - a.totalTime);
+            
+            const teamHtml = sortedMembers.map((member, index) => `
+                <div class="team-item">
+                    <div class="team-left">
+                        <div class="rank-badge rank-${index < 3 ? index + 1 : 'other'}">
+                            ${index < 3 ? index + 1 : '👤'}
+                        </div>
+                        <div>
+                            <div class="member-name">${member.name}</div>
+                            <div class="member-streak">${member.streak} day streak</div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-weight: 600;">${formatTime(member.totalTime)}</div>
+                        <div style="font-size: 0.875rem; color: #6b7280;">Today: ${formatTime(member.todayTime)}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('team-list').innerHTML = teamHtml;
+        }
+        
+        // Update stats view
+        function updateStats() {
+            const totalTime = myPlanks.reduce((sum, p) => sum + p.duration, 0);
+            const totalPlanks = myPlanks.length;
+            const dailyAvg = getWeeklyAverage();
+            const personalBest = myPlanks.length > 0 ? Math.max(...myPlanks.map(p => p.duration)) : 0;
+            
+            document.getElementById('total-time').textContent = formatTime(totalTime);
+            document.getElementById('total-planks').textContent = totalPlanks;
+            document.getElementById('daily-avg').textContent = formatTime(dailyAvg);
+            document.getElementById('personal-best').textContent = personalBest + 's';
+            
+            // Update plank types
+            const types = ['Standard', 'Side', 'Reverse', 'One-Arm'];
+            const typesHtml = types.map(type => {
+                const count = myPlanks.filter(p => p.type === type).length;
+                const totalTime = myPlanks
+                    .filter(p => p.type === type)
+                    .reduce((sum, p) => sum + p.duration, 0);
+                return `
+                    <div class="type-item">
+                        <span>${type}</span>
+                        <span class="type-stats">${count} planks • ${formatTime(totalTime)}</span>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('types-list').innerHTML = typesHtml;
+        }
+        
+        // Initialize app
+        function init() {
+            loadData();
+            updateMyPlanks();
+        }
+        
+        // Start the app
+        init();
+    </script>
+</body>
+</html>
